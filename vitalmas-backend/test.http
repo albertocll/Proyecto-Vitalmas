@@ -1,0 +1,111 @@
+@host = http://localhost:8080
+@jwt =
+@enfId =
+@sinId =
+@enfNombre = Diabetes
+@sinNombre = Tos
+
+### 0) Login → guarda {{jwt}}
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usuario": "house",
+  "password": "house123"
+}
+
+> {%
+  const data = JSON.parse(response.body || '{}');
+  if (data.token) {
+    client.global.set("jwt", data.token);
+  } else {
+    throw new Error("No vino 'token' en la respuesta de login");
+  }
+%}
+
+### 1) Ping con JWT
+GET {{host}}/api/ping
+Authorization: Bearer {{jwt}}
+
+### 2) Crear ENFERMEDAD (201 crea y guarda {{enfId}}, 409 ya existe → buscar)
+POST {{host}}/api/enfermedades
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "nombre": "{{enfNombre}}",
+  "nivelRiesgo": "ALTO",
+  "operar": false,
+  "tratamiento": "Insulina"
+}
+
+> {%
+  if (response.statusCode === 201) {
+    const e = JSON.parse(response.body || '{}');
+    if (e.id) client.global.set("enfId", e.id);
+  } else if (response.statusCode === 409) {
+    const r = client.global.sendSync({
+      method: 'GET',
+      url: `${client.global.get("host")}/api/enfermedades`,
+      headers: { Authorization: `Bearer ${client.global.get("jwt")}` }
+    });
+    const list = JSON.parse(r.body || '[]');
+    const target = list.find(e => (e.nombre || '').toLowerCase() === '{{enfNombre}}'.toLowerCase());
+    if (!target) throw new Error("No encuentro enfermedad por nombre: {{enfNombre}}");
+    client.global.set("enfId", target.id);
+  }
+%}
+
+### 3) Crear SÍNTOMA (201 crea y guarda {{sinId}}, 409 ya existe → buscar)
+POST {{host}}/api/sintomas
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "nombre": "{{sinNombre}}"
+}
+
+> {%
+  if (response.statusCode === 201) {
+    const s = JSON.parse(response.body || '{}');
+    if (s.id) client.global.set("sinId", s.id);
+  } else if (response.statusCode === 409) {
+    const r = client.global.sendSync({
+      method: 'GET',
+      url: `${client.global.get("host")}/api/sintomas`,
+      headers: { Authorization: `Bearer ${client.global.get("jwt")}` }
+    });
+    const list = JSON.parse(r.body || '[]');
+    const target = list.find(s => (s.nombre || '').toLowerCase() === '{{sinNombre}}'.toLowerCase());
+    if (!target) throw new Error("No encuentro síntoma por nombre: {{sinNombre}}");
+    client.global.set("sinId", target.id);
+  }
+%}
+
+### 4) Vincular síntoma a enfermedad (201 nuevo vínculo, 204 si ya estaba)
+POST {{host}}/api/enfermedades/{{enfId}}/sintomas/{{sinId}}
+Authorization: Bearer {{jwt}}
+
+### 5) Reintentar vinculación (idempotente → 204)
+POST {{host}}/api/enfermedades/{{enfId}}/sintomas/{{sinId}}
+Authorization: Bearer {{jwt}}
+
+### 6) Listar síntomas de la enfermedad (debe incluir "{{sinNombre}}")
+GET {{host}}/api/enfermedades/{{enfId}}/sintomas
+Authorization: Bearer {{jwt}}
+
+### 7) Listar todas las enfermedades
+GET {{host}}/api/enfermedades
+Authorization: Bearer {{jwt}}
+
+### 8) Listar todos los síntomas
+GET {{host}}/api/sintomas
+Authorization: Bearer {{jwt}}
+
+### 9) Obtener enfermedad por ID
+GET {{host}}/api/enfermedades/{{enfId}}
+Authorization: Bearer {{jwt}}
+
+### 10) Obtener síntoma por ID
+GET {{host}}/api/sintomas/{{sinId}}
+Authorization: Bearer {{jwt}}
