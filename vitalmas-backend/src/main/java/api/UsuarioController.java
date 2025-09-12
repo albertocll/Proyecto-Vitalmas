@@ -1,29 +1,34 @@
 package api;
 
 import api.model.Usuario;
-import api.service.UsuarioService;
-import org.springframework.http.MediaType;
+import api.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
-@RequestMapping(value = "/api/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    private final UsuarioService service;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioController(UsuarioService service) {
-        this.service = service;
+    public UsuarioController(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
-    @PostMapping
-    public ResponseEntity<Usuario> crear(@RequestBody Usuario usuario) {
-        Usuario creado = service.crear(usuario);
-        return ResponseEntity.ok(creado);
+    // Listar todos los usuarios
+    @GetMapping
+    public ResponseEntity<List<Usuario>> listar() {
+        return ResponseEntity.ok(usuarioRepository.findAll());
     }
 
+    // Detalle por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> detalle(@PathVariable java.util.UUID id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public ResponseEntity<Usuario> detalle(@PathVariable UUID id) {
+        return usuarioRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
