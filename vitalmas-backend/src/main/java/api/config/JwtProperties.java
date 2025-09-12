@@ -6,29 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "security.jwt")
 public class JwtProperties {
-
-    /**
-     * Clave secreta para firmar JWT (mínimo 32 caracteres para HS256)
-     */
     private String secret;
+    private long expirationSeconds;
 
-    /**
-     * Duración en segundos del token
-     */
-    private long expirationSeconds = 3600;
+    public String getSecret() { return secret; }
+    public void setSecret(String secret) { this.secret = secret; }
 
-    // Getters y Setters
-    public String getSecret() {
-        return secret;
-    }
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public long getExpirationSeconds() {
-        return expirationSeconds;
-    }
-    public void setExpirationSeconds(long expirationSeconds) {
-        this.expirationSeconds = expirationSeconds;
-    }
+    public long getExpirationSeconds() { return expirationSeconds; }
+    public void setExpirationSeconds(long expirationSeconds) { this.expirationSeconds = expirationSeconds; }
 }
