@@ -1,0 +1,22 @@
+# Normaliza texto por defecto
+* text=auto
+
+# Windows scripts
+*.bat eol=crlf
+*.cmd eol=crlf
+*.ps1 eol=crlf
+
+# Unix scripts
+*.sh eol=lf
+
+# Código y configs (LF siempre)
+*.java text eol=lf
+*.kt text eol=lf
+*.http text eol=lf
+*.md text eol=lf
+*.sql text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.properties text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
