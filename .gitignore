@@ -17,7 +17,6 @@ replay_pid*
 .DS_Store
 Thumbs.db
 desktop.ini
-repo-tree.txt
 
 # === Node / Vite (frontend) ===
 node_modules/
@@ -28,7 +27,12 @@ dist/
 .cache/
 coverage/
 
+# === Docker / PostgreSQL ===
+postgres-data/
+*.sql~
+
 # === Misceláneo ===
 *.class
 *.war
 *.ear
+repo-tree.txt
