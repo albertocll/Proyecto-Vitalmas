@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./vitalmas-backend
+      dockerfile: Dockerfile
+    container_name: vitalmas-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vitalmas
+      SPRING_DATASOURCE_USERNAME: vitalmas
+      SPRING_DATASOURCE_PASSWORD: vitalmas
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./vitalmas-frontend
+      dockerfile: Dockerfile
+    container_name: vitalmas-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
