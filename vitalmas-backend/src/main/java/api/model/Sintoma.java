@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Table(name = "sintomas")
 public class Sintoma {
 
     @Id
