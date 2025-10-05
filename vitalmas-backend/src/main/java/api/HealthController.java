@@ -18,7 +18,7 @@ public class HealthController {
     }
 
     // health en /api/health y /health
-    @GetMapping(path = {"/api/health", "/health"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = {"/api/health", "/health", "/api/ping"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> health() {
         Map<String, Object> body = new HashMap<>();
         body.put("status", "OK");
