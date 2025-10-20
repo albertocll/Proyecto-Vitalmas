@@ -2,6 +2,8 @@ package api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,25 +13,28 @@ import java.util.UUID;
 @Table(name = "enfermedades")
 public class Enfermedad {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "nombre es obligatorio")
+    @Size(min = 2, max = 80, message = "nombre debe tener entre 2 y 80 caracteres")
+    @Column(nullable = false, unique = true, length = 80)
     private String nombre;
 
+    @Size(max = 20, message = "nivelRiesgo máximo 20 caracteres")
     private String nivelRiesgo;
 
     private boolean operar;
 
+    @Size(max = 400, message = "tratamiento máximo 400 caracteres")
     private String tratamiento;
 
-    @ManyToMany(fetch = FetchType.EAGER) // evitas LazyInitialization en la respuesta
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "enfermedad_sintoma",
         joinColumns = @JoinColumn(name = "enfermedad_id"),
         inverseJoinColumns = @JoinColumn(name = "sintoma_id"),
-        uniqueConstraints = @UniqueConstraint(columnNames = { "enfermedad_id", "sintoma_id" })
+        uniqueConstraints = @UniqueConstraint(columnNames = {"enfermedad_id", "sintoma_id"})
     )
     @JsonManagedReference
     private Set<Sintoma> sintomas = new HashSet<>();
@@ -49,15 +54,6 @@ public class Enfermedad {
     public Set<Sintoma> getSintomas() { return sintomas; }
     public void setSintomas(Set<Sintoma> sintomas) { this.sintomas = sintomas; }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Enfermedad that)) return false;
-        return id != null && id.equals(that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    @Override public boolean equals(Object o) { return o instanceof Enfermedad that && id != null && id.equals(that.id); }
+    @Override public int hashCode() { return getClass().hashCode(); }
 }

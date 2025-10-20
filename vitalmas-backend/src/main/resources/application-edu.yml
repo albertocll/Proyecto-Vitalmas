@@ -1,0 +1,10 @@
+logging:
+  level:
+    "[org.springframework.security]": WARN
+
+server:
+  error:
+    include-message: ALWAYS
+    include-binding-errors: ALWAYS
+    include-stacktrace: NEVER
+    include-exception: false

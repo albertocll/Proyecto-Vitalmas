@@ -10,6 +10,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vitalmas
       SPRING_DATASOURCE_USERNAME: vitalmas
       SPRING_DATASOURCE_PASSWORD: vitalmas
+      SPRING_PROFILES_ACTIVE: edu
     ports:
       - "8080:8080"
     depends_on:
